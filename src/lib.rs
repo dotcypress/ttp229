@@ -1,26 +1,39 @@
+//! A platform agnostic Rust driver for the TTP229, based on the
+//! [`embedded-hal`](https://github.com/rust-embedded/embedded-hal) traits.
+//!
+//! ## The Device
+//!
+//! The TTP229 IC is capacitive sensing design specifically for touch pad controls.
+//! The device built in regulator for touch sensor.
+//! The main application is focused at replacing of the mechanical switch or button.
+//!
+//! - [Details and datasheet](https://www.tontek.com.tw/uploads/product/106/TTP229-LSF_V1.0_EN.pdf)
+
 #![no_std]
 
 use core::ops::Shl;
 use embedded_hal::blocking::spi::*;
 
+/// Keyboard state
 #[derive(Debug, Clone, Copy)]
-pub struct Keys {
+pub struct Keyboard {
     raw: usize,
     cursor: usize,
 }
 
-impl Keys {
-    pub fn new(raw: usize) -> Self {
+impl Keyboard {
+    fn new(raw: usize) -> Self {
         Self { raw, cursor: 0 }
     }
 
+    /// Checks if provided key is pressed
     pub fn is_active(&self, key: Key) -> bool {
         let mask = 1_usize.shl(key as usize);
         self.raw & mask == 0
     }
 }
 
-impl Iterator for Keys {
+impl Iterator for Keyboard {
     type Item = Key;
 
     fn next(&mut self) -> Option<Self::Item> {
@@ -39,6 +52,7 @@ impl Iterator for Keys {
     }
 }
 
+/// Available keys
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Key {
     Key1 = 6,
@@ -51,7 +65,7 @@ pub enum Key {
 }
 
 impl Key {
-    pub fn new(offset: usize) -> Self {
+    fn new(offset: usize) -> Self {
         match offset {
             6 => Key::Key1,
             5 => Key::Key2,
@@ -64,18 +78,26 @@ impl Key {
     }
 }
 
+/// Driver for the TTP229
 pub struct TTP229<SPI> {
     spi: SPI,
 }
 
 impl<SPI: Transfer<u8>> TTP229<SPI> {
+    /// Initialize the TTP229 driver.
     pub fn new(spi: SPI) -> Self {
         Self { spi }
     }
 
-    pub fn keys(&mut self) -> Result<Keys, SPI::Error> {
+    /// Realeses SPI bus.
+    pub fn release(self) -> SPI {
+        self.spi
+    }
+
+    /// Gets keyboard state
+    pub fn keys(&mut self) -> Result<Keyboard, SPI::Error> {
         let mut buf = [0_u8; 1];
         self.spi.transfer(&mut buf)?;
-        Ok(Keys::new(buf[0] as _))
+        Ok(Keyboard::new(buf[0] as _))
     }
 }

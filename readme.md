@@ -1,4 +1,10 @@
-#  TTP229
+# `ttp229`
+
+Platform agnostic Rust driver for the [TTP229](https://www.tontek.com.tw/uploads/product/106/TTP229-LSF_V1.0_EN.pdf), 16/8 keys touch pad detector IC.
+
+## Documentation
+
+The documentation can be found at [docs.rs](https://docs.rs/ttp229).
 
 ## License
 

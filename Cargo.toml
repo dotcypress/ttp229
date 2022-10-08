@@ -1,7 +1,22 @@
 [package]
 name = "ttp229"
-version = "0.0.0"
+version = "0.0.1"
+authors = ["Vitaly Domnikov <oss@vitaly.codes>"]
 edition = "2021"
+documentation = "https://docs.rs/ttp229"
+repository = "https://github.com/dotcypress/ttp229"
+license = "MIT/Apache-2.0"
+description = "Platform agnostic Rust driver for the TTP229, 16/8 keys touch pad detector IC."
+readme = "README.md"
+keywords = ["ttp229", "driver", "embedded-hal-driver"]
+categories = ["embedded", "hardware-support", "no-std"]
+include = [
+    "**/*.rs",
+    "Cargo.toml",
+    "README.md",
+    "LICENSE-MIT",
+    "LICENSE-APACHE",
+]
 
 [dependencies]
 embedded-hal = "0.2.7"
